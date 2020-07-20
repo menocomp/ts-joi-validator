@@ -1,0 +1,27 @@
+{
+  "name": "ts-joi-validator",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/menocomp/ts-joi-validator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/menocomp/ts-joi-validator/issues"
+  },
+  "homepage": "https://github.com/menocomp/ts-joi-validator#readme",
+  "devDependencies": {
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "@hapi/joi": "^17.1.1"
+  }
+}

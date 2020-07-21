@@ -4,17 +4,29 @@ type ParamAssertion =
   | [SchemaLike, ValidationOptions?]
   | [SchemaLike, string | Error, ValidationOptions?];
 
+type MethodAssertion = [SchemaLike, ValidationOptions?];
+
 const validationStore: {
   [methodName: string]: {
-    [paramPosition: number]: ParamAssertion;
+    params: {
+      [paramPosition: number]: ParamAssertion;
+    };
+    method?: MethodAssertion;
   };
 } = {};
 
-const AssertFn = (
+const TsJoiMethod = (methodAssertion?: MethodAssertion) => (
   target: any,
   name: string,
   descriptor: PropertyDescriptor
 ) => {
+  debugger;
+  if (!validationStore[name]) {
+    validationStore[name] = { params: {}, method: methodAssertion };
+  } else if (!validationStore[name].method) {
+    validationStore[name].method = methodAssertion;
+  }
+
   const originalFunction: Function = descriptor.value;
 
   descriptor.value = function (...args: any[]) {
@@ -25,14 +37,30 @@ const AssertFn = (
   return descriptor;
 };
 
+const TsJoiParam = (paramAssertion: ParamAssertion) => (
+  target: any,
+  name: string,
+  position: number
+) => {
+  validationStore[name] = {
+    ...validationStore[name],
+    params: {
+      ...validationStore[name]?.params,
+      [position.toString()]: paramAssertion,
+    },
+  };
+};
+
 const joiAssert = (methodName: string, params: any[]) => {
-  for (let paramPosition in validationStore[methodName]) {
-    const paramAssertion = validationStore[methodName][paramPosition];
+  debugger;
+
+  // Params validation
+  for (let paramPosition in validationStore[methodName].params) {
+    const paramAssertion = validationStore[methodName].params[paramPosition];
 
     const [joiSchema] = paramAssertion;
 
     if (Joi.isSchema(joiSchema)) {
-      debugger;
       if (
         typeof paramAssertion[1] === "string" ||
         paramAssertion[1] instanceof Error
@@ -45,30 +73,37 @@ const joiAssert = (methodName: string, params: any[]) => {
       }
     }
   }
+
+  // Method validation
+  const methodAssertion = validationStore[methodName].method;
+  if (methodAssertion) {
+    debugger;
+    const [joiSchema, options] = methodAssertion;
+
+    if (Joi.isSchema(joiSchema)) {
+      try {
+        Joi.assert(params, joiSchema, options);
+      } catch (err) {
+        debugger;
+      }
+    }
+  }
 };
 
-const TsJoi = (paramAssertion: ParamAssertion) => (
-  target: any,
-  name: string,
-  position: number
-) => {
-  validationStore[name] = {
-    ...validationStore[name],
-    [position.toString()]: paramAssertion,
-  };
-};
+const xParam: ParamAssertion = [Joi.number().required().min(5)];
 
-const xParam: ParamAssertion = [
-  Joi.number().required().min(5),
-];
+const yParam: ParamAssertion = [Joi.number().min(5), "mina"];
 
-const yParam: ParamAssertion = [
-  Joi.number().min(5),
+const methodAssertion: MethodAssertion = [
+  Joi.object().keys({
+    x: Joi.number().required().min(5),
+    y: Joi.number().min(5),
+  }),
 ];
 
 class xyz {
-  @AssertFn
-  fake(@TsJoi(xParam) x: string, @TsJoi(yParam) y?: number) {
+  @TsJoiMethod(methodAssertion)
+  fake(x: string, y?: number) {
     return x + y;
   }
 }

@@ -1,6 +1,12 @@
+import Joi, { SchemaLike, ValidationOptions } from "@hapi/joi";
+
+type ParamAssertion =
+  | [SchemaLike, ValidationOptions?]
+  | [SchemaLike, string | Error, ValidationOptions?];
+
 const validationStore: {
   [methodName: string]: {
-    [paramPosition: number]: any[];
+    [paramPosition: number]: ParamAssertion;
   };
 } = {};
 
@@ -12,58 +18,60 @@ const AssertFn = (
   const originalFunction: Function = descriptor.value;
 
   descriptor.value = function (...args: any[]) {
-    if (!validate(name, args)) {
-      throw new Error("Validation Error");
-    }
+    joiAssert(name, args);
 
     return originalFunction.apply(this, args);
   };
   return descriptor;
 };
 
-const validate = (methodName: string, params: any[]): boolean => {
-  let isValid = true;
+const joiAssert = (methodName: string, params: any[]) => {
   for (let paramPosition in validationStore[methodName]) {
-    for (let validator of validationStore[methodName][paramPosition]) {
-      switch (validator) {
-        case "required":
-          isValid = isValid && params[paramPosition] !== undefined;
-          break;
-        case "number":
-          isValid = isValid && Number.isInteger(params[paramPosition]);
-          break;
+    const paramAssertion = validationStore[methodName][paramPosition];
+
+    const [joiSchema] = paramAssertion;
+
+    if (Joi.isSchema(joiSchema)) {
+      debugger;
+      if (
+        typeof paramAssertion[1] === "string" ||
+        paramAssertion[1] instanceof Error
+      ) {
+        const [, message, options] = paramAssertion;
+        Joi.assert(params[paramPosition], joiSchema, message, options);
+      } else {
+        const [, options] = paramAssertion;
+        Joi.assert(params[paramPosition], joiSchema, options);
       }
     }
   }
-  return isValid;
 };
 
-const IsNumber = (target: any, name: string, position: number) => {
+const TsJoi = (paramAssertion: ParamAssertion) => (
+  target: any,
+  name: string,
+  position: number
+) => {
   validationStore[name] = {
     ...validationStore[name],
-    [position.toString()]: [
-      ...(validationStore[name]?.[position] ?? []),
-      "number",
-    ],
+    [position.toString()]: paramAssertion,
   };
 };
 
-const Required = (target: any, name: string, position: number) => {
-  validationStore[name] = {
-    ...validationStore[name],
-    [position.toString()]: [
-      ...(validationStore[name]?.[position] ?? []),
-      "required",
-    ],
-  };
-};
+const xParam: ParamAssertion = [
+  Joi.number().required().min(5),
+];
+
+const yParam: ParamAssertion = [
+  Joi.number().min(5),
+];
 
 class xyz {
   @AssertFn
-  fake(@IsNumber x: number, @Required y: number) {
+  fake(@TsJoi(xParam) x: string, @TsJoi(yParam) y?: number) {
     return x + y;
   }
 }
 
 const x = new xyz();
-console.log(x.fake(1, 2));
+console.log(x.fake("20"));

@@ -26,6 +26,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@hapi/joi": "^17.1.1"
+    "@hapi/joi": "^17.1.1",
+    "acorn": "^7.3.1"
   }
 }

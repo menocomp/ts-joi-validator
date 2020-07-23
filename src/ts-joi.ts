@@ -1,14 +1,14 @@
-import { TSJoiAssertion } from "./joi.types";
-import { ValidationStore } from "./store.types";
-import { joiAssert } from "./joi.assert";
-import { getFunctionParams } from "./helpers";
+import { TSJoiAssertion } from './joi.types';
+import { ValidationStore } from './store.types';
+import { joiAssert } from './joi.assert';
+import { getFunctionParams } from './helpers';
 
 const validationStore: ValidationStore = {};
 
 export const TsJoiMethod = (methodAssertion?: TSJoiAssertion) => (
   target: any,
   name: string,
-  descriptor: PropertyDescriptor
+  descriptor: PropertyDescriptor,
 ) => {
   if (methodAssertion) {
     const params = getFunctionParams(target[name]);
@@ -33,11 +33,7 @@ export const TsJoiMethod = (methodAssertion?: TSJoiAssertion) => (
   return descriptor;
 };
 
-export const TsJoiParam = (paramAssertion: TSJoiAssertion) => (
-  target: any,
-  name: string,
-  position: number
-) => {
+export const TsJoiParam = (paramAssertion: TSJoiAssertion) => (target: any, name: string, position: number) => {
   validationStore[name] = {
     ...validationStore[name],
     params: {

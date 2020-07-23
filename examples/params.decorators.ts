@@ -1,5 +1,5 @@
-import Joi from "@hapi/joi";
-import { TSJoiAssertion, TsJoiParam, TsJoiMethod } from "../src";
+import Joi from '@hapi/joi';
+import { TSJoiAssertion, TsJoiParam, TsJoiMethod } from '../src';
 
 const xParam: TSJoiAssertion = [Joi.number().required().min(6)];
 
@@ -13,4 +13,4 @@ class ParamsDecorators {
 }
 
 const paramsDecorators = new ParamsDecorators();
-console.log(paramsDecorators.fake("1970"));
+console.log(paramsDecorators.fake('1970'));

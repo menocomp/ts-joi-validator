@@ -1,4 +1,4 @@
-import { TSJoiAssertion } from "./";
+import { TSJoiAssertion } from './';
 
 export type ValidationStore = {
   [methodName: string]: {

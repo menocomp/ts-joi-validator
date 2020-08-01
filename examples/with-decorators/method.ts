@@ -1,5 +1,5 @@
 import Joi from '@hapi/joi';
-import { TSJoiAssertion, TsJoiMethod } from '../src';
+import { TSJoiAssertion, TsJoiMethod } from '../../src';
 
 const methodAssertion: TSJoiAssertion = [
   Joi.object().keys({

@@ -1,5 +1,5 @@
 import Joi from '@hapi/joi';
-import { TsJoiParam, TsJoiMethod, TSJoiAssertion } from '../src';
+import { TsJoiParam, TsJoiMethod, TSJoiAssertion } from '../../src';
 
 const yParam: TSJoiAssertion = [Joi.number()];
 

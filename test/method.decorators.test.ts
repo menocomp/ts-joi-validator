@@ -1,3 +1,4 @@
+import 'mocha';
 import Joi, { ValidationError } from '@hapi/joi';
 import { assert } from 'chai';
 import { TSJoiAssertion, TsJoiMethod } from '../src';

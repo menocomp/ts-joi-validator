@@ -7,6 +7,6 @@ export const zipObject = (props: [], values: []) => {
 };
 
 export const getFunctionParams = (fn: Function) => {
-  const parsedFunction = Parser.parse(`function ${fn.toString()}`) as any;
+  const parsedFunction = Parser.parse(`function ${fn.toString()}`, { ecmaVersion: 'latest' }) as any;
   return parsedFunction.body[0].params.map((n: any) => n.name);
 };

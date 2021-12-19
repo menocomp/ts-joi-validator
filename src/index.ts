@@ -1,2 +1,2 @@
 export { TsJoiMethod, TsJoiParam } from './ts-joi';
-export { TSJoiAssertion } from './joi.types';
+export { TSJoiValidation } from './joi.types';

@@ -1,18 +1,18 @@
 import 'mocha';
 import Joi, { ValidationError } from '@hapi/joi';
 import { assert } from 'chai';
-import { TSJoiAssertion, TsJoiMethod } from '../src';
+import { TSJoiValidation, TsJoiMethod } from '../src';
 
 describe('MethodDecorators', function () {
   describe('With 1 argument', function () {
-    const methodAssertion: TSJoiAssertion = [
+    const methodValidation: TSJoiValidation = [
       Joi.object().keys({
         x: Joi.string(),
       }),
     ];
 
     class MethodDecorators1 {
-      @TsJoiMethod(methodAssertion)
+      @TsJoiMethod(methodValidation)
       fake1(x: string) {
         return x;
       }
@@ -61,7 +61,7 @@ describe('MethodDecorators', function () {
   });
 
   describe('With 2 arguments', function () {
-    const methodAssertion: TSJoiAssertion = [
+    const methodValidation: TSJoiValidation = [
       Joi.object().keys({
         x: Joi.boolean(),
         y: Joi.number().max(5),
@@ -69,7 +69,7 @@ describe('MethodDecorators', function () {
     ];
 
     class MethodDecorators2 {
-      @TsJoiMethod(methodAssertion)
+      @TsJoiMethod(methodValidation)
       fake2(x: boolean, y: number) {
         return;
       }

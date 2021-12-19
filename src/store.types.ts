@@ -1,12 +1,12 @@
-import { TSJoiAssertion } from './';
+import { TSJoiValidation } from './';
 
 export type ValidationStore = {
   [methodName: string]: {
     params: {
-      [paramPosition: number]: TSJoiAssertion;
+      [paramPosition: number]: TSJoiValidation;
     };
     method: {
-      name?: TSJoiAssertion;
+      name?: TSJoiValidation;
       params?: [];
     };
   };

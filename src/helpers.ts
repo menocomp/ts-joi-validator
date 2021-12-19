@@ -1,8 +1,8 @@
 import { Parser } from 'acorn';
 
-export const zipObject = (props: [], values: []) => {
+export const zipObject = (props: unknown[], values: unknown[]) => {
   return props.reduce((prev, prop, i) => {
-    return Object.assign(prev, { [prop]: values[i] });
+    return Object.assign(prev, { [prop as string]: values[i] });
   }, {});
 };
 

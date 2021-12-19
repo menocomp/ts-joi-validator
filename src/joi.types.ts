@@ -1,3 +1,3 @@
-import { SchemaLike, ValidationOptions } from '@hapi/joi';
+import { Schema, ValidationOptions } from '@hapi/joi';
 
-export type TSJoiAssertion = [SchemaLike, ValidationOptions?] | [SchemaLike, string | Error, ValidationOptions?];
+export type TSJoiValidation = [Schema, ValidationOptions?];

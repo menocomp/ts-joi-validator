@@ -1,41 +1,41 @@
-import { TSJoiAssertion } from './joi.types';
+import { TSJoiValidation } from './joi.types';
 import { ValidationStore } from './store.types';
-import { joiAssert } from './joi.assert';
+import { joiValidate } from './joi.validate';
 import { getFunctionParams } from './helpers';
 
 const validationStore: ValidationStore = {};
 
 export const TsJoiMethod =
-  (methodAssertion?: TSJoiAssertion) => (target: any, name: string, descriptor: PropertyDescriptor) => {
-    if (methodAssertion) {
+  (methodValidation?: TSJoiValidation) => (target: any, name: string, descriptor: PropertyDescriptor) => {
+    if (methodValidation) {
       const params = getFunctionParams(target[name]);
 
       if (!validationStore[name]) {
         validationStore[name] = {
           params: {},
-          method: { name: methodAssertion, params },
+          method: { name: methodValidation, params },
         };
       } else if (!validationStore[name].method) {
-        validationStore[name].method = { name: methodAssertion, params };
+        validationStore[name].method = { name: methodValidation, params };
       }
     }
 
     const originalFunction: Function = descriptor.value;
 
     descriptor.value = function (...args: []) {
-      joiAssert(validationStore, name, args);
+      const newArgs = joiValidate(validationStore, name, args);
 
-      return originalFunction.apply(this, args);
+      return originalFunction.apply(this, Object.values(newArgs));
     };
     return descriptor;
   };
 
-export const TsJoiParam = (paramAssertion: TSJoiAssertion) => (target: any, name: string, position: number) => {
+export const TsJoiParam = (paramValidation: TSJoiValidation) => (target: any, name: string, position: number) => {
   validationStore[name] = {
     ...validationStore[name],
     params: {
       ...validationStore[name]?.params,
-      [position.toString()]: paramAssertion,
+      [position.toString()]: paramValidation,
     },
   };
 };
